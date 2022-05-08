@@ -1,0 +1,49 @@
+let primitiveTypes = {
+    'string',
+    'int',
+    'float',
+    'byte',
+    'rune',
+    'bool',
+    'any',
+    'interface{}', # TODO: this shouldn't be in primitive
+};
+
+let renderComments = \comment $`${//seq.split('\n', comment) >> $`// ${.}` ::\n}`;
+
+let rec renderers = (
+    renderType: \type
+        cond type {
+            (:primitive, ...):   primitive <: primitiveTypes && primitive,
+            (:items, ...):       $`[]${renderers.renderType(items)}`,
+            (:key, :value, ...): $`map[${renderers.renderType(key)}]${renderers.renderType(value)}`,
+            (?:package:{}, ?:pointer:false, :typeRef, ...):
+                $`${pointer && '*'}${package && $`${package}.`}${typeRef}`,
+            (:fields, ...):
+                (fields && $`
+                    struct {
+                        ${fields orderby .name >> $`${.name} ${renderers.renderType(.type)} ${renderers.renderFieldTag(.tags)}`::\i}
+                    }
+                `) || `struct{}`
+            ,
+            _: 'interface{}'
+        }
+    ,
+    renderFieldTag: \tags $'`${tags orderby .name >> $`${.name}:${.value:q}`:: }`',
+    renderTypeDecl: \(:name, :type, ?:description:{}, ...) $`
+        ${description && renderComments(description)}
+        type ${name} ${renderers.renderType(type)}
+    `,
+    renderTypeDeclList: \typeList $`${typeList >> renderers.renderTypeDecl(.)::\i\i}`,
+    renderTypeDecls:    \typeSet  renderers.renderTypeDeclList(typeSet orderby .name),
+);
+
+let renderFile = \(:package, :types, ...) $`
+    package ${package}
+
+    ${renderers.renderTypeDecls(types)}
+`;
+
+renderers +> (
+    :renderFile,
+)

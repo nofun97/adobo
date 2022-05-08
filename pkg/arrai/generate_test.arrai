@@ -1,0 +1,16 @@
+
+let generator = //{./generate}(());
+
+let test =       //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/test.json};
+let justString = //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/just_string.json};
+let justMap =    //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/just_map.json};
+let justArray =  //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/just_array.json};
+
+let str = \b b => (:.@, @char: .@byte);
+
+(
+    test:       generator(test)       = str(//[//encoding.bytes]{/testdata/test.json.go}       ),
+    justString: generator(justString) = str(//[//encoding.bytes]{/testdata/just_string.json.go}),
+    justMap:    generator(justMap)    = str(//[//encoding.bytes]{/testdata/just_map.json.go}   ),
+    justArray:  generator(justArray)  = str(//[//encoding.bytes]{/testdata/just_array.json.go} ),
+)

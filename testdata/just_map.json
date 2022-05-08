@@ -1,0 +1,10 @@
+{
+    "$schema": "https://json-schema.org/draft/2010-09/schema",
+    "$title": "justString",
+    "description": "testdata",
+    "patternProperties": {
+        ".*": {
+            "type": "string"
+        }
+    }
+}

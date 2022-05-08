@@ -1,0 +1,6 @@
+let safeName = \name
+    //re.compile(`^[-_\d\s\W]+`).sub('', name) ->
+    //re.compile(`[-\s\.]+`).sub('_', .)
+;
+
+(:safeName)

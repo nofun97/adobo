@@ -1,0 +1,164 @@
+# this script takes a json value representing a jsonschema and convert it into a
+# list of type declarations
+
+# FIXME: this should create a data structure that other languages can use
+
+let reduce = //{github.com/arr-ai/arrai/contrib/util}.reduce;
+
+let goPrimitiveType = {
+    'string':  'string',
+    'number':  'float',
+    'boolean': 'bool',
+};
+
+let safeName = //{./util}.safeName;
+
+# Turn a schema into a nested tuple of types and metadata
+let rec parse = \name \schema
+    let type = cond schema {
+        {'properties': properties, ...}:
+            (
+                fields: properties => (
+                    parse(.@, .@value) +> (
+                        tags: {
+                            |name  , value             |
+                            ('json', $`${.@},omitempty`),
+                            ('yaml', $`${.@},omitempty`),
+                        }
+                    )
+                ),
+            )
+        ,
+        {'patternProperties': patternProperties, ...}:
+            let freeFormFields =
+                (patternProperties(".*")?:{} || patternProperties("^.*$")?:{}) &&
+                patternProperties count = 1
+            ;
+            cond {
+                freeFormFields: (
+                    key: (type: (primitive: 'string')),
+                    value: parse(name, (patternProperties single).@value),
+                ),
+
+                # Currently only handles map with any value. Anything with
+                # extra patterns will become map[string]interface{}
+                _: (
+                    key:   (type: (primitive: 'string')),
+                    value: (type: (primitive: 'interface{}')),
+                ),
+            }
+        ,
+        {'items': items, ...}:   (items: parse(name, items)),
+        {'type': 'object', ...}: (fields: {}),
+        {'type': 'array', ...}:  (items: parse(name, {})),
+        {'type': type, ...}:     (primitive: goPrimitiveType(type)?:'interface{}'),
+        {}:                      (primitive: 'interface{}'),
+        _: //error($`unhandled schema: ${schema}`),
+    };
+
+    (:type, :name, description: schema('description')?:{})
+;
+
+let schemaToType = \schema parse(schema('$title')?:'Schema', schema);
+
+# Because parse returns a tree of type and metadata and the renderer expects
+# pure type tree, this function simply removes metadata of the nested type.
+let simplifyNestedType = \t
+    t +> (
+        type +>:
+            cond t.type {
+                (:items, ...): (items: items.type),
+                (:key, :value, ...): (key: key.type, value: value.type),
+                _: t.type
+            }
+    )
+;
+
+# Turn a giant nested type into a set of types.
+let spreadType = \type
+    let isSimple = \t
+        let simple = \t
+            cond t {
+                (:primitive, ...): true,
+                (:typeRef, ...): true,
+                (:fields, ...): fields = {},
+            }
+        ;
+        simple(t) || simple(t.items?.type:{}) || (simple(t.key?.type:{}) && simple(t.value?.type:{}))
+    ;
+    let varName = \path safeName(//seq.join('', path >> //str.title(.)));
+    let typeRef = \path (typeRef: varName(path), pointer: true);
+
+    # Visit each type in the type tree and return a set of new types generated
+    # by each level of the type tree. When complex type is found, the current
+    # type is transformed so that any nested complex types inside the current
+    # type are referred by a type reference and then it spreads those complex
+    # nested types.
+    let rec spread = \path \type
+        cond type.type {
+            (:fields, ...):
+                fields &&
+                let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
+                let newTypes = //rel.union(
+                    # only spread complex fields
+                    # for maps and arrays, only spread their complex values so
+                    # that not all complex maps and arrays are aliased into
+                    # another type
+                    fields filter .type {
+                        (:fields, ...): fields && spreadField({}, .),
+                        (:key, :value, ...): !isSimple(value.type) && spreadField(['value'], value),
+                        (:items, ...): !isSimple(items.type) && spreadField(['item'], items)
+                    }
+                )
+                ;
+                newTypes with (
+                    type +> (
+                        type +>: (
+                            fields: fields => (
+                                cond {isSimple(.type): simplifyNestedType(.)} ||
+                                # change complex types into type reference. For
+                                # map and array, only change their values into
+                                # reference because they're inlineable.
+                                cond .type {
+                                    (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
+                                    (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
+                                    (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
+                                }
+                            ) +> (name: varName([.name]))
+                        ),
+                        :path,
+                    )
+                )
+            ,
+            (:items, ...):
+                cond {
+                    isSimple(items.type): {simplifyNestedType(type) +> (:path)},
+                    _:
+                        (spread(path ++ ['item'], items)) with
+                        (type +> (type+>: (items: (typeRef: varName(path ++ ['item']), pointer: true)), :path)),
+                }
+            ,
+            (:key, :value, ...):
+                cond {
+                    (key.type.primitive?:{} != 'string'): //error($`key should be string: ${key}`),
+                    isSimple(value.type): {simplifyNestedType(type) +> (:path)},
+                    _:
+                        (spread(path ++ ['value'], value)) with
+                        (type +> (type +>: (key: key.type, value: (typeRef: varName(path ++ ['value']), pointer: true)), :path)),
+                },
+            # this is just to handle primitive types at the root but this is
+            # unlikely to happen since all the complex types handle simple types.
+            (:primitive, ...): {type +> (:path)},
+        }
+    ;
+    spread([type.name], type) => .~|path| +> (name: varName(.path))
+;
+
+let typeSet = \schema spreadType(schemaToType(schema));
+
+(
+    :parse,
+    :schemaToType,
+    :spreadType,
+    :typeSet,
+)

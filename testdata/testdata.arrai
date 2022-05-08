@@ -1,0 +1,8 @@
+let generator = //{/pkg/arrai/generate};
+
+{
+    'test.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./test.json}),
+    'just_string.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_string.json}),
+    'just_map.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_map.json}),
+    'just_array.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_array.json}),
+}

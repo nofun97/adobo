@@ -1,0 +1,23 @@
+name: Generate Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-tag:
+    name: Generate tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+        with:
+          fetch-depth: '0'
+
+      # Generate tag if commit message contains #major or #patch or #patch
+      - name: Bump version and push tag
+        id: generate_tag
+        uses: anothrNick/github-tag-action@1.39.0
+        env:
+          WITH_V: true

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2010-09/schema",
+  "$title": "test",
+  "description": "testdata",
+  "type": "object",
+  "properties": {
+    "arr": {
+      "description": "array example",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "string": {
+      "type": "string"
+    },
+    "number": {
+      "type": "number"
+    },
+    "boolean": {
+      "type": "boolean"
+    },
+    "complexArray": {
+      "items": {
+        "patternProperties": {
+          ".*": {
+            "properties": {
+              "prop1": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "obj": {
+      "properties": {
+        "mapOfEmptyObject": {
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        "mapObject": {
+          "patternProperties": {
+            "^.*$": {
+              "properties": {
+                "prop1": {
+                  "type": "string"
+                },
+                "prop2": {
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "objectWithField": {
+          "items": {
+            "properties": {
+              "prop1": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "emptyObject1": {
+          "type": "object"
+        },
+        "emptyObject2": {
+          "properties": {}
+        },
+        "emptyArray1": {
+          "type": "array"
+        },
+        "emptyArray2": {
+          "items": {}
+        },
+        "justString": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
