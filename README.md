@@ -8,6 +8,16 @@ Adobo is written using [arr.ai](https://arr.ai)
 **WARNING**: adobo is very much experimental and it also use a very experimental
 language. Use at your own risk.
 
+## How to install
+
+To install, you will need [Go](https://go.dev/) and run the following command:
+
+```sh
+go install github.com/nofun97/adobo
+```
+
+To check if it is installed correctly, run `adobo help` and it should output the help message.
+
 ## Usage
 
 Simplest usage is to just run it by pointing to your jsonschema file
@@ -18,7 +28,7 @@ adobo path/to/your/schema.json
 
 The previous command will output Go code to your stdout.
 
-For more information, you can run adobo with the `--help` flag.
+For more information, you can run adobo with the `--help` flag or `adobo help`.
 
 ## Future Updates :crossed_fingers:
 
