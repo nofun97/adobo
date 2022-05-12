@@ -59,6 +59,17 @@
             }
           }
         },
+        "mapObjectWithDifferentPattern": {
+          "patternProperties": {
+            "random regex": {
+              "properties": {
+                "prop1": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
         "objectWithField": {
           "items": {
             "properties": {
