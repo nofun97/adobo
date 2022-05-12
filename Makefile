@@ -1,6 +1,6 @@
 ARRAI_FILES = $(shell find . -name '*.arrai')
 TEST_FILES  = $(shell find ./testdata/ -name '*.json')
-ARRAI		= docker run -it --rm -w $$(pwd) -v $$(pwd):$$(pwd) anzbank/arrai
+ARRAI		= docker run --rm -w $$(pwd) -v $$(pwd):$$(pwd) anzbank/arrai
 
 ifdef LOCAL_ARRAI
 ARRAI=arrai
