@@ -12,7 +12,6 @@ build: assets
 
 .PHONY: assets
 assets: pkg/bundles/generator.arraiz
-	go mod tidy
 
 pkg/bundles/generator.arraiz: $(ARRAI_FILES)
 	$(ARRAI) bundle --out $@ pkg/arrai/generate_from_json_path.arrai
@@ -27,4 +26,5 @@ test: testdata $(ARRAI_FILES)
 
 .PHONY: check-clean
 check-clean: assets testdata
+	go mod tidy
 	git --no-pager diff HEAD && test -z "$$(git status --porcelain)"
