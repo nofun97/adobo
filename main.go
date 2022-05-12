@@ -32,7 +32,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "name",
 				Aliases:     []string{"n"},
-				Usage:       "Name for your type. If not provided, it will generate one from $title. If $title is not provided, it uses the default value",
+				Usage:       "Name for your type. If not provided, it will generate one from title annotation. If title is not provided, it uses the default value",
 				Value:       "Schema",
 				Destination: &nameFlagValue,
 			},

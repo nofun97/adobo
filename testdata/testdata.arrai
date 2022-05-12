@@ -1,3 +1,4 @@
+# this script generates the test files.
 let generator = //{/pkg/arrai/generate};
 
 {

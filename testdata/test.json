@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2010-09/schema",
-  "$title": "test",
+  "title": "test",
   "description": "testdata",
   "type": "object",
   "properties": {
@@ -54,6 +54,17 @@
                   "items": {
                     "type": "string"
                   }
+                }
+              }
+            }
+          }
+        },
+        "mapObjectWithDifferentPattern": {
+          "patternProperties": {
+            "random regex": {
+              "properties": {
+                "prop1": {
+                  "type": "number"
                 }
               }
             }
