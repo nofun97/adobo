@@ -60,7 +60,7 @@ let rec parse = \name \schema
     (:type, :name, description: schema('description')?:{})
 ;
 
-let schemaToType = \schema parse(schema('$title')?:'Schema', schema);
+let schemaToType = \schema parse(schema('title')?:'Schema', schema);
 
 # Because parse returns a tree of type and metadata and the renderer expects
 # pure type tree, this function simply removes metadata of the nested type.

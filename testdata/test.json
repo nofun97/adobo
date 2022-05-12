@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2010-09/schema",
-  "$title": "test",
+  "title": "test",
   "description": "testdata",
   "type": "object",
   "properties": {

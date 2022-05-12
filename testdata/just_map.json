@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2010-09/schema",
-    "$title": "justString",
+    "title": "justString",
     "description": "testdata",
     "patternProperties": {
         ".*": {
