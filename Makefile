@@ -1,8 +1,8 @@
 ARRAI_FILES = $(shell find . -name '*.arrai')
 TEST_FILES  = $(shell find ./testdata/ -name '*.json')
-ARRAI		= go run github.com/arr-ai/arrai/cmd/arrai
+ARRAI		= docker run -it --rm -w $$(pwd) -v $$(pwd):$$(pwd) anzbank/arrai
 
-ifdef $(LOCAL)
+ifdef LOCAL_ARRAI
 ARRAI=arrai
 endif
 
