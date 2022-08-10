@@ -93,8 +93,28 @@
         },
         "justString": {
           "type": "string"
+        },
+        "requiredString": {
+          "type": "string"
+        },
+        "requiredEmptyObject": {
+          "type": "object"
+        },
+        "requiredObjectWithField": {
+          "items": {
+            "properties": {
+              "prop1": {
+                "type": "string"
+              }
+            }
+          }
         }
-      }
+      },
+      "required": [
+        "requiredString",
+        "requiredEmptyObject",
+        "requiredObjectWithField"
+      ]
     }
   }
 }

@@ -13,12 +13,13 @@ let renderComments = \comment $`${//seq.split('\n', comment) >> $`// ${.}` ::\n}
 
 let rec renderers = (
     renderType: \type
+        (type.pointer?:false && '*') ++
         cond type {
             (:primitive, ...):   primitive <: primitiveTypes && primitive,
             (:items, ...):       $`[]${renderers.renderType(items)}`,
             (:key, :value, ...): $`map[${renderers.renderType(key)}]${renderers.renderType(value)}`,
-            (?:package:{}, ?:pointer:false, :typeRef, ...):
-                $`${pointer && '*'}${package && $`${package}.`}${typeRef}`,
+            (?:package:{}, :typeRef, ...):
+                $`${package && $`${package}.`}${typeRef}`,
             (:fields, ...):
                 (fields && $`
                     struct {

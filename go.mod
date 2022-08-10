@@ -3,7 +3,7 @@ module github.com/nofun97/adobo
 go 1.18
 
 require (
-	github.com/arr-ai/arrai v0.305.0
+	github.com/arr-ai/arrai v0.307.0
 	github.com/spf13/afero v1.8.2
 	github.com/urfave/cli/v2 v2.6.0
 )

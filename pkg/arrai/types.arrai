@@ -27,6 +27,7 @@ let rec parse = \name \schema
                         }
                     )
                 ),
+                required: schema('required')?:[] => .@item,
             )
         ,
         {'patternProperties': patternProperties, ...}:
@@ -97,7 +98,7 @@ let spreadType = \type
     # nested types.
     let rec spread = \path \type
         cond type.type {
-            (:fields, ...):
+            (:fields, :required, ...):
                 fields &&
                 let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
                 let newTypes = //rel.union(
@@ -115,17 +116,20 @@ let spreadType = \type
                 newTypes with (
                     type +> (
                         type +>: (
-                            fields: fields => (
-                                cond {isSimple(.type): simplifyNestedType(.)} ||
-                                # change complex types into type reference. For
-                                # map and array, only change their values into
-                                # reference because they're inlineable.
-                                cond .type {
-                                    (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
-                                    (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
-                                    (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
-                                }
-                            ) +> (name: varName([.name]))
+                            fields: fields =>
+                                let field = (
+                                    cond {isSimple(.type): simplifyNestedType(.)} ||
+                                    # change complex types into type reference. For
+                                    # map and array, only change their values into
+                                    # reference because they're inlineable.
+                                    cond .type {
+                                        (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
+                                        (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
+                                        (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
+                                    }
+                                );
+                                # TODO: something is broken in arr.ai, when it tries to `+> (type +>: (pointer: .name !<: required))` it seems to be broken
+                                field +> (name: varName([.name]), type: field.type +> (pointer: .name !<: required))
                         ),
                         :path,
                     )
