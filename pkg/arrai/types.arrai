@@ -15,20 +15,33 @@ let safeName = //{./util}.safeName;
 
 # Turn a schema into a nested tuple of types and metadata
 let rec parse = \name \schema
-    let type = cond schema {
-        {'properties': properties, ...}:
-            (
-                fields: properties => (
-                    parse(.@, .@value) +> (
-                        tags: {
-                            |name  , value             |
-                            ('json', $`${.@},omitempty`),
-                            ('yaml', $`${.@},omitempty`),
-                        }
-                    )
-                ),
-                required: schema('required')?:[] => .@item,
+    
+    let object = \properties
+    (
+        fields: properties => (
+            parse(.@, .@value) +> (
+                tags: {
+                    |name  , value             |
+                    ('json', $`${.@},omitempty`),
+                    ('yaml', $`${.@},omitempty`),
+                }
             )
+        ),
+        required: schema('required')?:[] => .@item,
+    );
+
+    let type = cond schema {
+
+        {'$defs': defs, ...}: 
+            (schema('properties')?:{} -> object(.)) +>
+            (
+                defs: defs => (
+                    parse(.@, .@value)
+                )
+            )
+        ,
+        {'properties': properties, ...}: 
+            object(properties)
         ,
         {'patternProperties': patternProperties, ...}:
             cond {
@@ -50,6 +63,7 @@ let rec parse = \name \schema
                 ),
             }
         ,
+        {'$ref': ref, ...}:      (ref: ref),
         {'items': items, ...}:   (items: parse(name, items)),
         {'type': 'object', ...}: (fields: {}),
         {'type': 'array', ...}:  (items: parse(name, {})),
@@ -90,6 +104,18 @@ let spreadType = \type
     ;
     let varName = \path safeName(//seq.join('', path >> //str.title(.)));
     let typeRef = \path (typeRef: varName(path), pointer: true);
+    
+    # Resolve a pointer reference in the form: A#B
+    # A: Relative path from current schema to target schema (note: if empty then current schema is referenced).
+    # B: Path from schema root (note: if empty then the schema itself is being referenced).
+    #
+    # This implementation makes no attempt to handle references outside the current schema.
+    # https://niem.github.io/json/reference/json-schema/references/
+    # http://json-schema.org/understanding-json-schema/structuring.html
+    let resolveRef = \path \ref cond {
+        !//seq.has_prefix('#', ref): //error($`cross-schema references not supported: ${ref}`),
+        _: typeRef([path(0)] ++ //seq.split('/', //seq.trim_prefix('#/', ref))),
+    };
 
     # Visit each type in the type tree and return a set of new types generated
     # by each level of the type tree. When complex type is found, the current
@@ -97,9 +123,8 @@ let spreadType = \type
     # type are referred by a type reference and then it spreads those complex
     # nested types.
     let rec spread = \path \type
-        cond type.type {
-            (:fields, :required, ...):
-                fields &&
+        let object = \fields \required
+            fields &&
                 let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
                 let newTypes = //rel.union(
                     # only spread complex fields
@@ -126,6 +151,7 @@ let spreadType = \type
                                         (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
                                         (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
                                         (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
+                                        (:ref, ...):         . +> (type: resolveRef(path, ref)),
                                     }
                                 );
                                 # TODO: something is broken in arr.ai, when it tries to `+> (type +>: (pointer: .name !<: required))` it seems to be broken
@@ -134,6 +160,16 @@ let spreadType = \type
                         :path,
                     )
                 )
+        ;
+
+        cond type.type {
+
+            (:defs, ...):
+                object(type.type.fields?:{}, type.type.required?:{}) | 
+                (//rel.union(defs => spread(path ++ ['defs', .name], .)))
+            ,
+            (:fields, :required, ...): 
+                object(fields, required)
             ,
             (:items, ...):
                 cond {
