@@ -16,32 +16,27 @@ let safeName = //{./util}.safeName;
 # Turn a schema into a nested tuple of types and metadata
 let rec parse = \name \schema
     
-    let object = \properties
+    let conditional = \conditions
     (
-        fields: properties => (
-            parse(.@, .@value) +> (
-                tags: {
-                    |name  , value             |
-                    ('json', $`${.@},omitempty`),
-                    ('yaml', $`${.@},omitempty`),
-                }
-            )
-        ),
-        required: schema('required')?:[] => .@item,
+        conditional: conditions => 
+            parse($`${name}Opt${.@}`, .@item)
     );
 
     let type = cond schema {
 
-        {'$defs': defs, ...}: 
-            (schema('properties')?:{} -> object(.)) +>
-            (
-                defs: defs => (
-                    parse(.@, .@value)
-                )
-            )
-        ,
         {'properties': properties, ...}: 
-            object(properties)
+            (
+                fields: properties => (
+                    parse(.@, .@value) +> (
+                        tags: {
+                            |name  , value             |
+                            ('json', $`${.@},omitempty`),
+                            ('yaml', $`${.@},omitempty`),
+                        }
+                    )
+                ),
+                required: schema('required')?:[] => .@item,
+            )
         ,
         {'patternProperties': patternProperties, ...}:
             cond {
@@ -63,13 +58,33 @@ let rec parse = \name \schema
                 ),
             }
         ,
+        {'allOf': cons, ...}: 
+            conditional(cons)
+        ,
+        {'anyOf': cons, ...}: 
+            conditional(cons)
+        ,
+        {'oneOf': cons, ...}: 
+            conditional(cons)
+        ,
         {'$ref': ref, ...}:      (ref: ref),
         {'items': items, ...}:   (items: parse(name, items)),
         {'type': 'object', ...}: (fields: {}),
         {'type': 'array', ...}:  (items: parse(name, {})),
         {'type': type, ...}:     (primitive: goPrimitiveType(type)?:'interface{}'),
+        {'not': _, ...}:         (primitive: 'interface{}'),
         {}:                      (primitive: 'interface{}'),
-        _: //error($`unhandled schema: ${schema}`),
+        _:                       (undefined: schema),
+    } +> 
+    cond schema {
+        {'$defs': defs, ...}: 
+            (
+                defs: defs => (
+                    parse(.@, .@value)
+                )
+            )
+        ,
+        _: ()
     };
 
     (:type, :name, description: schema('description')?:{})
@@ -123,8 +138,10 @@ let spreadType = \type
     # type are referred by a type reference and then it spreads those complex
     # nested types.
     let rec spread = \path \type
-        let object = \fields \required
-            fields &&
+        cond type.type {
+
+            (:fields, :required, ...): 
+                fields &&
                 let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
                 let newTypes = //rel.union(
                     # only spread complex fields
@@ -134,7 +151,10 @@ let spreadType = \type
                     fields filter .type {
                         (:fields, ...): fields && spreadField({}, .),
                         (:key, :value, ...): !isSimple(value.type) && spreadField(['value'], value),
-                        (:items, ...): !isSimple(items.type) && spreadField(['item'], items)
+                        (:items, ...): !isSimple(items.type) && spreadField(['item'], items),
+                        (:conditional, ...): //rel.union(
+                            conditional where !(.).type.undefined?:false => 
+                                spreadField({}, .)),
                     }
                 )
                 ;
@@ -147,11 +167,16 @@ let spreadType = \type
                                     # change complex types into type reference. For
                                     # map and array, only change their values into
                                     # reference because they're inlineable.
+                                    let subtype = \type \suffix cond type {
+                                        (:ref, ...): resolveRef(path, ref),
+                                        (:conditional, ...): (primitive: 'interface{}'),
+                                        _: typeRef(path ++ [.name, suffix]) };
                                     cond .type {
                                         (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
-                                        (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
-                                        (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
+                                        (:key, :value, ...): . +> (type: (key: key.type, value: subtype(value.type, 'value'))),
+                                        (:items, ...):       . +> (type: (items: subtype(items.type, 'item'))),
                                         (:ref, ...):         . +> (type: resolveRef(path, ref)),
+                                        (:conditional, ...): . +> (type: (primitive: 'interface{}')),
                                     }
                                 );
                                 # TODO: something is broken in arr.ai, when it tries to `+> (type +>: (pointer: .name !<: required))` it seems to be broken
@@ -160,16 +185,6 @@ let spreadType = \type
                         :path,
                     )
                 )
-        ;
-
-        cond type.type {
-
-            (:defs, ...):
-                object(type.type.fields?:{}, type.type.required?:{}) | 
-                (//rel.union(defs => spread(path ++ ['defs', .name], .)))
-            ,
-            (:fields, :required, ...): 
-                object(fields, required)
             ,
             (:items, ...):
                 cond {
@@ -186,10 +201,28 @@ let spreadType = \type
                     _:
                         (spread(path ++ ['value'], value)) with
                         (type +> (type +>: (key: key.type, value: (typeRef: varName(path ++ ['value']), pointer: true)), :path)),
-                },
-            # this is just to handle primitive types at the root but this is
-            # unlikely to happen since all the complex types handle simple types.
+                }
+            ,
+            (:conditional, ...):
+                # TODO: Verify. This doesn't match the container type patterns above.
+                {type +> (type:(primitive: 'interface{}'), :path)} |
+                //rel.union(conditional where !(.).type.undefined?:false =>
+                        let subs = (spread(path ++ [.name], .));
+                        subs => . +> (path: path ++ [.name])
+                )
+            ,
+
+            # This is here to handle types at the root, but this is
+            # unlikely to happen since these are usually embedded within complex types.
             (:primitive, ...): {type +> (:path)},
+            (:ref): {type +> (type: resolveRef(path, ref))},
+
+            _: //error($`undefined type: ${type.type}`),
+        } | 
+        cond type.type {
+            (:defs, ...):
+                //rel.union(defs => 
+                    spread(path ++ ['defs', .name], .))
         }
     ;
     spread([type.name], type) => .~|path| +> (name: varName(.path))

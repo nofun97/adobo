@@ -7,4 +7,4 @@ let generator = //{/pkg/arrai/generate};
     'just_map.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_map.json}),
     'just_array.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_array.json}),
     'just_defs.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_defs.json}),
-}
+    'just_composition.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_composition.json}), }

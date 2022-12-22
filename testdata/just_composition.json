@@ -1,0 +1,103 @@
+{
+    "$schema": "https://json-schema.org/draft/2010-09/schema",
+    "title": "justComp",
+    "description": "testdata",
+    "properties": {
+        "name": {
+            "allOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "maxLength": 5
+                }
+            ]
+        },
+        "age": {
+            "oneOf": [
+                {
+                    "type": "number",
+                    "multipleOf": 5
+                },
+                {
+                    "type": "number",
+                    "multipleOf": 3
+                }
+            ]
+        },
+        "data": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "maxLength": 5
+                },
+                {
+                    "type": "number",
+                    "minimum": 0
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "animal": {
+                            "type": "string"
+                        },
+                        "vegetable": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "blank": {
+            "not": {
+                "type": "number",
+                "minimum": 0
+            }
+        },
+        "referenced": {
+            "$ref": "#/$defs/animal"
+        },
+        "animals": {
+            "patternProperties": {
+                ".*": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "$defs": {
+        "animal": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/animal"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "vertebrate": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "invertebrate": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
