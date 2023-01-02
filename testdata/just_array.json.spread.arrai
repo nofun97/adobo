@@ -1,0 +1,12 @@
+{
+  |description, name, type|
+  (
+    'testdata',
+    'JustString',
+    (
+      items: (
+        primitive: 'string',
+      ),
+    ),
+  ),
+}

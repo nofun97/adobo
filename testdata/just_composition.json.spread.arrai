@@ -1,0 +1,326 @@
+{
+  |description, name, type|
+  (
+    {},
+    'JustCompAgeOpt0',
+    (
+      primitive: 'float',
+    ),
+  ),
+  (
+    {},
+    'JustCompAgeOpt1',
+    (
+      primitive: 'float',
+    ),
+  ),
+  (
+    {},
+    'JustCompAnimalsValue',
+    (
+      primitive: 'interface{}',
+    ),
+  ),
+  (
+    {},
+    'JustCompAnimalsValueAnimalsOpt0',
+    (
+      primitive: 'string',
+    ),
+  ),
+  (
+    {},
+    'JustCompAnimalsValueAnimalsOpt1',
+    (
+      primitive: 'string',
+    ),
+  ),
+  (
+    {},
+    'JustCompDataOpt0',
+    (
+      primitive: 'string',
+    ),
+  ),
+  (
+    {},
+    'JustCompDataOpt1',
+    (
+      primitive: 'float',
+    ),
+  ),
+  (
+    {},
+    'JustCompDataOpt2',
+    (
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Animal',
+          {
+            |name, value|
+            ('json', 'animal,omitempty'),
+            ('yaml', 'animal,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+        (
+          {},
+          'Vegetable',
+          {
+            |name, value|
+            ('json', 'vegetable,omitempty'),
+            ('yaml', 'vegetable,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+  (
+    {},
+    'JustCompDefsAnimal',
+    (
+      primitive: 'interface{}',
+    ),
+  ),
+  (
+    {},
+    'JustCompDefsAnimalAnimalOpt0',
+    (
+      pointer: true,
+      typeRef: 'JustCompDefsAnimal',
+    ),
+  ),
+  (
+    {},
+    'JustCompDefsAnimalAnimalOpt1',
+    (
+      primitive: 'string',
+    ),
+  ),
+  (
+    {},
+    'JustCompDefsAnimalAnimalOpt2',
+    (
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Vertebrate',
+          {
+            |name, value|
+            ('json', 'vertebrate,omitempty'),
+            ('yaml', 'vertebrate,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+  (
+    {},
+    'JustCompDefsAnimalAnimalOpt3',
+    (
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Invertebrate',
+          {
+            |name, value|
+            ('json', 'invertebrate,omitempty'),
+            ('yaml', 'invertebrate,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+  (
+    {},
+    'JustCompNameOpt0',
+    (
+      primitive: 'string',
+    ),
+  ),
+  (
+    'testdata',
+    'JustComp',
+    (
+      defs: {
+        |description, name, type|
+        (
+          {},
+          'animal',
+          (
+            conditional: {
+              |description, name, type|
+              (
+                {},
+                'animalOpt0',
+                (
+                  ref: '#/$defs/animal',
+                ),
+              ),
+              (
+                {},
+                'animalOpt1',
+                (
+                  primitive: 'string',
+                ),
+              ),
+              (
+                {},
+                'animalOpt2',
+                (
+                  fields: {
+                    |description, name, tags, type|
+                    (
+                      {},
+                      'vertebrate',
+                      {
+                        |name, value|
+                        ('json', 'vertebrate,omitempty'),
+                        ('yaml', 'vertebrate,omitempty'),
+                      },
+                      (
+                        primitive: 'string',
+                      ),
+                    ),
+                  },
+                  required: {},
+                ),
+              ),
+              (
+                {},
+                'animalOpt3',
+                (
+                  fields: {
+                    |description, name, tags, type|
+                    (
+                      {},
+                      'invertebrate',
+                      {
+                        |name, value|
+                        ('json', 'invertebrate,omitempty'),
+                        ('yaml', 'invertebrate,omitempty'),
+                      },
+                      (
+                        primitive: 'string',
+                      ),
+                    ),
+                  },
+                  required: {},
+                ),
+              ),
+            },
+          ),
+        ),
+      },
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Age',
+          {
+            |name, value|
+            ('json', 'age,omitempty'),
+            ('yaml', 'age,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'interface{}',
+          ),
+        ),
+        (
+          {},
+          'Animals',
+          {
+            |name, value|
+            ('json', 'animals,omitempty'),
+            ('yaml', 'animals,omitempty'),
+          },
+          (
+            key: (
+              primitive: 'string',
+            ),
+            pointer: true,
+            value: (
+              primitive: 'interface{}',
+            ),
+          ),
+        ),
+        (
+          {},
+          'Blank',
+          {
+            |name, value|
+            ('json', 'blank,omitempty'),
+            ('yaml', 'blank,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'interface{}',
+          ),
+        ),
+        (
+          {},
+          'Data',
+          {
+            |name, value|
+            ('json', 'data,omitempty'),
+            ('yaml', 'data,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'interface{}',
+          ),
+        ),
+        (
+          {},
+          'Name',
+          {
+            |name, value|
+            ('json', 'name,omitempty'),
+            ('yaml', 'name,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'interface{}',
+          ),
+        ),
+        (
+          {},
+          'Referenced',
+          {
+            |name, value|
+            ('json', 'referenced,omitempty'),
+            ('yaml', 'referenced,omitempty'),
+          },
+          (
+            pointer: true,
+            typeRef: 'JustCompDefsAnimal',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+}

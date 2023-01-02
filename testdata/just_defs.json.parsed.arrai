@@ -1,0 +1,129 @@
+(
+  description: 'testdata',
+  name: 'justDefs',
+  type: (
+    defs: {
+      |description, name, type|
+      (
+        {},
+        'address',
+        (
+          fields: {
+            |description, name, tags, type|
+            (
+              {},
+              'street_name',
+              {
+                |name, value|
+                ('json', 'street_name,omitempty'),
+                ('yaml', 'street_name,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'street_number',
+              {
+                |name, value|
+                ('json', 'street_number,omitempty'),
+                ('yaml', 'street_number,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+          },
+          required: {},
+        ),
+      ),
+      (
+        {},
+        'person',
+        (
+          fields: {
+            |description, name, tags, type|
+            (
+              {},
+              'father',
+              {
+                |name, value|
+                ('json', 'father,omitempty'),
+                ('yaml', 'father,omitempty'),
+              },
+              (
+                ref: '#/$defs/person',
+              ),
+            ),
+            (
+              {},
+              'first_name',
+              {
+                |name, value|
+                ('json', 'first_name,omitempty'),
+                ('yaml', 'first_name,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'last_name',
+              {
+                |name, value|
+                ('json', 'last_name,omitempty'),
+                ('yaml', 'last_name,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'mother',
+              {
+                |name, value|
+                ('json', 'mother,omitempty'),
+                ('yaml', 'mother,omitempty'),
+              },
+              (
+                ref: '#/$defs/person',
+              ),
+            ),
+          },
+          required: {'first_name', 'last_name'},
+        ),
+      ),
+    },
+    fields: {
+      |description, name, tags, type|
+      (
+        {},
+        'address',
+        {
+          |name, value|
+          ('json', 'address,omitempty'),
+          ('yaml', 'address,omitempty'),
+        },
+        (
+          ref: '#/$defs/address',
+        ),
+      ),
+      (
+        {},
+        'contact',
+        {
+          |name, value|
+          ('json', 'contact,omitempty'),
+          ('yaml', 'contact,omitempty'),
+        },
+        (
+          ref: '#/$defs/person',
+        ),
+      ),
+    },
+    required: {},
+  ),
+)

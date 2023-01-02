@@ -1,0 +1,13 @@
+(
+  description: 'testdata',
+  name: 'justString',
+  type: (
+    items: (
+      description: {},
+      name: 'justString',
+      type: (
+        primitive: 'string',
+      ),
+    ),
+  ),
+)

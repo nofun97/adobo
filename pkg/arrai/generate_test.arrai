@@ -1,5 +1,5 @@
 
-let generator = //{./generate}(());
+let generator = //{./generate}.go(());
 
 let test =       //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/test.json};
 let justString = //[(decode: //encoding.json.decoder((strict: false)))]{/testdata/just_string.json};

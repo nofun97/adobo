@@ -1,0 +1,263 @@
+(
+  description: 'testdata',
+  name: 'justComp',
+  type: (
+    defs: {
+      |description, name, type|
+      (
+        {},
+        'animal',
+        (
+          conditional: {
+            |description, name, type|
+            (
+              {},
+              'animalOpt0',
+              (
+                ref: '#/$defs/animal',
+              ),
+            ),
+            (
+              {},
+              'animalOpt1',
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'animalOpt2',
+              (
+                fields: {
+                  |description, name, tags, type|
+                  (
+                    {},
+                    'vertebrate',
+                    {
+                      |name, value|
+                      ('json', 'vertebrate,omitempty'),
+                      ('yaml', 'vertebrate,omitempty'),
+                    },
+                    (
+                      primitive: 'string',
+                    ),
+                  ),
+                },
+                required: {},
+              ),
+            ),
+            (
+              {},
+              'animalOpt3',
+              (
+                fields: {
+                  |description, name, tags, type|
+                  (
+                    {},
+                    'invertebrate',
+                    {
+                      |name, value|
+                      ('json', 'invertebrate,omitempty'),
+                      ('yaml', 'invertebrate,omitempty'),
+                    },
+                    (
+                      primitive: 'string',
+                    ),
+                  ),
+                },
+                required: {},
+              ),
+            ),
+          },
+        ),
+      ),
+    },
+    fields: {
+      |description, name, tags, type|
+      (
+        {},
+        'age',
+        {
+          |name, value|
+          ('json', 'age,omitempty'),
+          ('yaml', 'age,omitempty'),
+        },
+        (
+          conditional: {
+            |description, name, type|
+            (
+              {},
+              'ageOpt0',
+              (
+                primitive: 'float',
+              ),
+            ),
+            (
+              {},
+              'ageOpt1',
+              (
+                primitive: 'float',
+              ),
+            ),
+          },
+        ),
+      ),
+      (
+        {},
+        'animals',
+        {
+          |name, value|
+          ('json', 'animals,omitempty'),
+          ('yaml', 'animals,omitempty'),
+        },
+        (
+          key: (
+            type: (
+              primitive: 'string',
+            ),
+          ),
+          value: (
+            description: {},
+            name: 'animals',
+            type: (
+              conditional: {
+                |description, name, type|
+                (
+                  {},
+                  'animalsOpt0',
+                  (
+                    primitive: 'string',
+                  ),
+                ),
+                (
+                  {},
+                  'animalsOpt1',
+                  (
+                    primitive: 'string',
+                  ),
+                ),
+              },
+            ),
+          ),
+        ),
+      ),
+      (
+        {},
+        'blank',
+        {
+          |name, value|
+          ('json', 'blank,omitempty'),
+          ('yaml', 'blank,omitempty'),
+        },
+        (
+          primitive: 'interface{}',
+        ),
+      ),
+      (
+        {},
+        'data',
+        {
+          |name, value|
+          ('json', 'data,omitempty'),
+          ('yaml', 'data,omitempty'),
+        },
+        (
+          conditional: {
+            |description, name, type|
+            (
+              {},
+              'dataOpt0',
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'dataOpt1',
+              (
+                primitive: 'float',
+              ),
+            ),
+            (
+              {},
+              'dataOpt2',
+              (
+                fields: {
+                  |description, name, tags, type|
+                  (
+                    {},
+                    'animal',
+                    {
+                      |name, value|
+                      ('json', 'animal,omitempty'),
+                      ('yaml', 'animal,omitempty'),
+                    },
+                    (
+                      primitive: 'string',
+                    ),
+                  ),
+                  (
+                    {},
+                    'vegetable',
+                    {
+                      |name, value|
+                      ('json', 'vegetable,omitempty'),
+                      ('yaml', 'vegetable,omitempty'),
+                    },
+                    (
+                      primitive: 'string',
+                    ),
+                  ),
+                },
+                required: {},
+              ),
+            ),
+          },
+        ),
+      ),
+      (
+        {},
+        'name',
+        {
+          |name, value|
+          ('json', 'name,omitempty'),
+          ('yaml', 'name,omitempty'),
+        },
+        (
+          conditional: {
+            |description, name, type|
+            (
+              {},
+              'nameOpt0',
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'nameOpt1',
+              (
+                undefined: {
+                  'maxLength': 5,
+                },
+              ),
+            ),
+          },
+        ),
+      ),
+      (
+        {},
+        'referenced',
+        {
+          |name, value|
+          ('json', 'referenced,omitempty'),
+          ('yaml', 'referenced,omitempty'),
+        },
+        (
+          ref: '#/$defs/animal',
+        ),
+      ),
+    },
+    required: {},
+  ),
+)

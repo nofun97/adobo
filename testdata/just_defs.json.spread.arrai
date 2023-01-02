@@ -1,0 +1,232 @@
+{
+  |description, name, type|
+  (
+    {},
+    'JustDefsDefsAddress',
+    (
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Street_name',
+          {
+            |name, value|
+            ('json', 'street_name,omitempty'),
+            ('yaml', 'street_name,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+        (
+          {},
+          'Street_number',
+          {
+            |name, value|
+            ('json', 'street_number,omitempty'),
+            ('yaml', 'street_number,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'string',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+  (
+    {},
+    'JustDefsDefsPerson',
+    (
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Father',
+          {
+            |name, value|
+            ('json', 'father,omitempty'),
+            ('yaml', 'father,omitempty'),
+          },
+          (
+            pointer: true,
+            typeRef: 'JustDefsDefsPerson',
+          ),
+        ),
+        (
+          {},
+          'First_name',
+          {
+            |name, value|
+            ('json', 'first_name,omitempty'),
+            ('yaml', 'first_name,omitempty'),
+          },
+          (
+            pointer: {},
+            primitive: 'string',
+          ),
+        ),
+        (
+          {},
+          'Last_name',
+          {
+            |name, value|
+            ('json', 'last_name,omitempty'),
+            ('yaml', 'last_name,omitempty'),
+          },
+          (
+            pointer: {},
+            primitive: 'string',
+          ),
+        ),
+        (
+          {},
+          'Mother',
+          {
+            |name, value|
+            ('json', 'mother,omitempty'),
+            ('yaml', 'mother,omitempty'),
+          },
+          (
+            pointer: true,
+            typeRef: 'JustDefsDefsPerson',
+          ),
+        ),
+      },
+      required: {'first_name', 'last_name'},
+    ),
+  ),
+  (
+    'testdata',
+    'JustDefs',
+    (
+      defs: {
+        |description, name, type|
+        (
+          {},
+          'address',
+          (
+            fields: {
+              |description, name, tags, type|
+              (
+                {},
+                'street_name',
+                {
+                  |name, value|
+                  ('json', 'street_name,omitempty'),
+                  ('yaml', 'street_name,omitempty'),
+                },
+                (
+                  primitive: 'string',
+                ),
+              ),
+              (
+                {},
+                'street_number',
+                {
+                  |name, value|
+                  ('json', 'street_number,omitempty'),
+                  ('yaml', 'street_number,omitempty'),
+                },
+                (
+                  primitive: 'string',
+                ),
+              ),
+            },
+            required: {},
+          ),
+        ),
+        (
+          {},
+          'person',
+          (
+            fields: {
+              |description, name, tags, type|
+              (
+                {},
+                'father',
+                {
+                  |name, value|
+                  ('json', 'father,omitempty'),
+                  ('yaml', 'father,omitempty'),
+                },
+                (
+                  ref: '#/$defs/person',
+                ),
+              ),
+              (
+                {},
+                'first_name',
+                {
+                  |name, value|
+                  ('json', 'first_name,omitempty'),
+                  ('yaml', 'first_name,omitempty'),
+                },
+                (
+                  primitive: 'string',
+                ),
+              ),
+              (
+                {},
+                'last_name',
+                {
+                  |name, value|
+                  ('json', 'last_name,omitempty'),
+                  ('yaml', 'last_name,omitempty'),
+                },
+                (
+                  primitive: 'string',
+                ),
+              ),
+              (
+                {},
+                'mother',
+                {
+                  |name, value|
+                  ('json', 'mother,omitempty'),
+                  ('yaml', 'mother,omitempty'),
+                },
+                (
+                  ref: '#/$defs/person',
+                ),
+              ),
+            },
+            required: {'first_name', 'last_name'},
+          ),
+        ),
+      },
+      fields: {
+        |description, name, tags, type|
+        (
+          {},
+          'Address',
+          {
+            |name, value|
+            ('json', 'address,omitempty'),
+            ('yaml', 'address,omitempty'),
+          },
+          (
+            pointer: true,
+            typeRef: 'JustDefsDefsAddress',
+          ),
+        ),
+        (
+          {},
+          'Contact',
+          {
+            |name, value|
+            ('json', 'contact,omitempty'),
+            ('yaml', 'contact,omitempty'),
+          },
+          (
+            pointer: true,
+            typeRef: 'JustDefsDefsPerson',
+          ),
+        ),
+      },
+      required: {},
+    ),
+  ),
+}

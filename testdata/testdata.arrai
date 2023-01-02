@@ -1,10 +1,22 @@
 # this script generates the test files.
 let generator = //{/pkg/arrai/generate};
 
-{
-    'test.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./test.json}),
-    'just_string.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_string.json}),
-    'just_map.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_map.json}),
-    'just_array.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_array.json}),
-    'just_defs.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_defs.json}),
-    'just_composition.json.go': generator((), //[(decode: //encoding.json.decoder((strict: false)))]{./just_composition.json}), }
+let targets = {|name,in|
+    ('test.json', //[(decode: //encoding.json.decoder((strict: false)))]{./test.json}),
+    ('just_string.json', //[(decode: //encoding.json.decoder((strict: false)))]{./just_string.json}),
+    ('just_map.json', //[(decode: //encoding.json.decoder((strict: false)))]{./just_map.json}),
+    ('just_array.json', //[(decode: //encoding.json.decoder((strict: false)))]{./just_array.json}),
+    ('just_defs.json', //[(decode: //encoding.json.decoder((strict: false)))]{./just_defs.json}),
+    ('just_composition.json', //[(decode: //encoding.json.decoder((strict: false)))]{./just_composition.json}),
+};
+
+let transforms = {|fn,ext|
+    (\config \schema generator.parsed(config, schema) -> //fmt.pretty(.), 'parsed.arrai'),
+    (\config \schema generator.spread(config, schema) -> //fmt.pretty(.), 'spread.arrai'),
+    (generator.go, 'go'),
+};
+
+//rel.union(targets => \target
+    transforms => \trans
+        (@:$`${target.name}.${trans.ext}`, @value:trans.fn((), target.in))
+)
