@@ -1,6 +1,7 @@
 let safeName = \name
-    //re.compile(`^[-_\d\s\W]+`).sub('', name) ->
-    //re.compile(`[-\s\.]+`).sub('_', .)
+    //re.compile(`^[-_\d\s\W]+`).sub('', name) ->   # Remove prefix characters
+    //re.compile(`[\$]+`).sub('', name) ->          # Remove characters
+    //re.compile(`[-\s\.]+`).sub('_', .)            # Replace characters
 ;
 
 (:safeName)

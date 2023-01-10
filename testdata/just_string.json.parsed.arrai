@@ -1,0 +1,7 @@
+(
+  description: 'testdata',
+  name: 'justString',
+  type: (
+    primitive: 'string',
+  ),
+)

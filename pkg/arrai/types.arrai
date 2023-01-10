@@ -15,8 +15,16 @@ let safeName = //{./util}.safeName;
 
 # Turn a schema into a nested tuple of types and metadata
 let rec parse = \name \schema
+    
+    let conditional = \conditions
+    (
+        conditional: conditions => 
+            parse($`${name}Opt${.@}`, .@item)
+    );
+
     let type = cond schema {
-        {'properties': properties, ...}:
+
+        {'properties': properties, ...}: 
             (
                 fields: properties => (
                     parse(.@, .@value) +> (
@@ -50,12 +58,33 @@ let rec parse = \name \schema
                 ),
             }
         ,
+        {'allOf': cons, ...}: 
+            conditional(cons)
+        ,
+        {'anyOf': cons, ...}: 
+            conditional(cons)
+        ,
+        {'oneOf': cons, ...}: 
+            conditional(cons)
+        ,
+        {'$ref': ref, ...}:      (ref: ref),
         {'items': items, ...}:   (items: parse(name, items)),
         {'type': 'object', ...}: (fields: {}),
         {'type': 'array', ...}:  (items: parse(name, {})),
         {'type': type, ...}:     (primitive: goPrimitiveType(type)?:'interface{}'),
+        {'not': _, ...}:         (primitive: 'interface{}'),
         {}:                      (primitive: 'interface{}'),
-        _: //error($`unhandled schema: ${schema}`),
+        _:                       (undefined: schema),
+    } +> 
+    cond schema {
+        {'$defs': defs, ...}: 
+            (
+                defs: defs => (
+                    parse(.@, .@value)
+                )
+            )
+        ,
+        _: ()
     };
 
     (:type, :name, description: schema('description')?:{})
@@ -90,6 +119,18 @@ let spreadType = \type
     ;
     let varName = \path safeName(//seq.join('', path >> //str.title(.)));
     let typeRef = \path (typeRef: varName(path), pointer: true);
+    
+    # Resolve a pointer reference in the form: A#B
+    # A: Relative path from current schema to target schema (note: if empty then current schema is referenced).
+    # B: Path from schema root (note: if empty then the schema itself is being referenced).
+    #
+    # This implementation makes no attempt to handle references outside the current schema.
+    # https://niem.github.io/json/reference/json-schema/references/
+    # http://json-schema.org/understanding-json-schema/structuring.html
+    let resolveRef = \path \ref cond {
+        !//seq.has_prefix('#', ref): //error($`cross-schema references not supported: ${ref}`),
+        _: typeRef([path(0)] ++ //seq.split('/', //seq.trim_prefix('#/', ref))),
+    };
 
     # Visit each type in the type tree and return a set of new types generated
     # by each level of the type tree. When complex type is found, the current
@@ -98,7 +139,8 @@ let spreadType = \type
     # nested types.
     let rec spread = \path \type
         cond type.type {
-            (:fields, :required, ...):
+
+            (:fields, :required, ...): 
                 fields &&
                 let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
                 let newTypes = //rel.union(
@@ -109,7 +151,10 @@ let spreadType = \type
                     fields filter .type {
                         (:fields, ...): fields && spreadField({}, .),
                         (:key, :value, ...): !isSimple(value.type) && spreadField(['value'], value),
-                        (:items, ...): !isSimple(items.type) && spreadField(['item'], items)
+                        (:items, ...): !isSimple(items.type) && spreadField(['item'], items),
+                        (:conditional, ...): //rel.union(
+                            conditional where !(.).type.undefined?:false => 
+                                spreadField({}, .)),
                     }
                 )
                 ;
@@ -122,10 +167,16 @@ let spreadType = \type
                                     # change complex types into type reference. For
                                     # map and array, only change their values into
                                     # reference because they're inlineable.
+                                    let subtype = \type \suffix cond type {
+                                        (:ref, ...): resolveRef(path, ref),
+                                        (:conditional, ...): (primitive: 'interface{}'),
+                                        _: typeRef(path ++ [.name, suffix]) };
                                     cond .type {
                                         (:fields, ...):      . +> (type: typeRef(path ++ [.name])),
-                                        (:key, :value, ...): . +> (type: (key: key.type, value: typeRef(path ++ [.name, 'value']))),
-                                        (:items, ...):       . +> (type: (items: typeRef(path ++ [.name, 'item']))),
+                                        (:key, :value, ...): . +> (type: (key: key.type, value: subtype(value.type, 'value'))),
+                                        (:items, ...):       . +> (type: (items: subtype(items.type, 'item'))),
+                                        (:ref, ...):         . +> (type: resolveRef(path, ref)),
+                                        (:conditional, ...): . +> (type: (primitive: 'interface{}')),
                                     }
                                 );
                                 # TODO: something is broken in arr.ai, when it tries to `+> (type +>: (pointer: .name !<: required))` it seems to be broken
@@ -150,10 +201,28 @@ let spreadType = \type
                     _:
                         (spread(path ++ ['value'], value)) with
                         (type +> (type +>: (key: key.type, value: (typeRef: varName(path ++ ['value']), pointer: true)), :path)),
-                },
-            # this is just to handle primitive types at the root but this is
-            # unlikely to happen since all the complex types handle simple types.
+                }
+            ,
+            (:conditional, ...):
+                # TODO: Verify. This doesn't match the container type patterns above.
+                {type +> (type:(primitive: 'interface{}'), :path)} |
+                //rel.union(conditional where !(.).type.undefined?:false =>
+                        let subs = (spread(path ++ [.name], .));
+                        subs => . +> (path: path ++ [.name])
+                )
+            ,
+
+            # This is here to handle types at the root, but this is
+            # unlikely to happen since these are usually embedded within complex types.
             (:primitive, ...): {type +> (:path)},
+            (:ref): {type +> (type: resolveRef(path, ref))},
+
+            _: //error($`undefined type: ${type.type}`),
+        } | 
+        cond type.type {
+            (:defs, ...):
+                //rel.union(defs => 
+                    spread(path ++ ['defs', .name], .))
         }
     ;
     spread([type.name], type) => .~|path| +> (name: varName(.path))

@@ -1,0 +1,404 @@
+(
+  description: 'testdata',
+  name: 'test',
+  type: (
+    fields: {
+      |description, name, tags, type|
+      (
+        {},
+        'boolean',
+        {
+          |name, value|
+          ('json', 'boolean,omitempty'),
+          ('yaml', 'boolean,omitempty'),
+        },
+        (
+          primitive: 'bool',
+        ),
+      ),
+      (
+        {},
+        'complexArray',
+        {
+          |name, value|
+          ('json', 'complexArray,omitempty'),
+          ('yaml', 'complexArray,omitempty'),
+        },
+        (
+          items: (
+            description: {},
+            name: 'complexArray',
+            type: (
+              key: (
+                type: (
+                  primitive: 'string',
+                ),
+              ),
+              value: (
+                description: {},
+                name: 'complexArray',
+                type: (
+                  fields: {
+                    |description, name, tags, type|
+                    (
+                      {},
+                      'prop1',
+                      {
+                        |name, value|
+                        ('json', 'prop1,omitempty'),
+                        ('yaml', 'prop1,omitempty'),
+                      },
+                      (
+                        primitive: 'string',
+                      ),
+                    ),
+                  },
+                  required: {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      (
+        {},
+        'number',
+        {
+          |name, value|
+          ('json', 'number,omitempty'),
+          ('yaml', 'number,omitempty'),
+        },
+        (
+          primitive: 'float',
+        ),
+      ),
+      (
+        {},
+        'obj',
+        {
+          |name, value|
+          ('json', 'obj,omitempty'),
+          ('yaml', 'obj,omitempty'),
+        },
+        (
+          fields: {
+            |description, name, tags, type|
+            (
+              {},
+              'emptyArray1',
+              {
+                |name, value|
+                ('json', 'emptyArray1,omitempty'),
+                ('yaml', 'emptyArray1,omitempty'),
+              },
+              (
+                items: (
+                  description: {},
+                  name: 'emptyArray1',
+                  type: (
+                    primitive: 'interface{}',
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'emptyArray2',
+              {
+                |name, value|
+                ('json', 'emptyArray2,omitempty'),
+                ('yaml', 'emptyArray2,omitempty'),
+              },
+              (
+                items: (
+                  description: {},
+                  name: 'emptyArray2',
+                  type: (
+                    primitive: 'interface{}',
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'emptyObject1',
+              {
+                |name, value|
+                ('json', 'emptyObject1,omitempty'),
+                ('yaml', 'emptyObject1,omitempty'),
+              },
+              (
+                fields: {},
+              ),
+            ),
+            (
+              {},
+              'emptyObject2',
+              {
+                |name, value|
+                ('json', 'emptyObject2,omitempty'),
+                ('yaml', 'emptyObject2,omitempty'),
+              },
+              (
+                fields: {},
+                required: {},
+              ),
+            ),
+            (
+              {},
+              'justString',
+              {
+                |name, value|
+                ('json', 'justString,omitempty'),
+                ('yaml', 'justString,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+            (
+              {},
+              'mapObject',
+              {
+                |name, value|
+                ('json', 'mapObject,omitempty'),
+                ('yaml', 'mapObject,omitempty'),
+              },
+              (
+                key: (
+                  type: (
+                    primitive: 'string',
+                  ),
+                ),
+                value: (
+                  description: {},
+                  name: 'mapObject',
+                  type: (
+                    fields: {
+                      |description, name, tags, type|
+                      (
+                        {},
+                        'prop1',
+                        {
+                          |name, value|
+                          ('json', 'prop1,omitempty'),
+                          ('yaml', 'prop1,omitempty'),
+                        },
+                        (
+                          primitive: 'string',
+                        ),
+                      ),
+                      (
+                        {},
+                        'prop2',
+                        {
+                          |name, value|
+                          ('json', 'prop2,omitempty'),
+                          ('yaml', 'prop2,omitempty'),
+                        },
+                        (
+                          items: (
+                            description: {},
+                            name: 'prop2',
+                            type: (
+                              primitive: 'string',
+                            ),
+                          ),
+                        ),
+                      ),
+                    },
+                    required: {},
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'mapObjectWithDifferentPattern',
+              {
+                |name, value|
+                ('json', 'mapObjectWithDifferentPattern,omitempty'),
+                ('yaml', 'mapObjectWithDifferentPattern,omitempty'),
+              },
+              (
+                key: (
+                  type: (
+                    primitive: 'string',
+                  ),
+                ),
+                value: (
+                  description: {},
+                  name: 'mapObjectWithDifferentPattern',
+                  type: (
+                    fields: {
+                      |description, name, tags, type|
+                      (
+                        {},
+                        'prop1',
+                        {
+                          |name, value|
+                          ('json', 'prop1,omitempty'),
+                          ('yaml', 'prop1,omitempty'),
+                        },
+                        (
+                          primitive: 'float',
+                        ),
+                      ),
+                    },
+                    required: {},
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'mapOfEmptyObject',
+              {
+                |name, value|
+                ('json', 'mapOfEmptyObject,omitempty'),
+                ('yaml', 'mapOfEmptyObject,omitempty'),
+              },
+              (
+                key: (
+                  type: (
+                    primitive: 'string',
+                  ),
+                ),
+                value: (
+                  description: {},
+                  name: 'mapOfEmptyObject',
+                  type: (
+                    fields: {},
+                    required: {},
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'objectWithField',
+              {
+                |name, value|
+                ('json', 'objectWithField,omitempty'),
+                ('yaml', 'objectWithField,omitempty'),
+              },
+              (
+                items: (
+                  description: {},
+                  name: 'objectWithField',
+                  type: (
+                    fields: {
+                      |description, name, tags, type|
+                      (
+                        {},
+                        'prop1',
+                        {
+                          |name, value|
+                          ('json', 'prop1,omitempty'),
+                          ('yaml', 'prop1,omitempty'),
+                        },
+                        (
+                          primitive: 'string',
+                        ),
+                      ),
+                    },
+                    required: {},
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'requiredEmptyObject',
+              {
+                |name, value|
+                ('json', 'requiredEmptyObject,omitempty'),
+                ('yaml', 'requiredEmptyObject,omitempty'),
+              },
+              (
+                fields: {},
+              ),
+            ),
+            (
+              {},
+              'requiredObjectWithField',
+              {
+                |name, value|
+                ('json', 'requiredObjectWithField,omitempty'),
+                ('yaml', 'requiredObjectWithField,omitempty'),
+              },
+              (
+                items: (
+                  description: {},
+                  name: 'requiredObjectWithField',
+                  type: (
+                    fields: {
+                      |description, name, tags, type|
+                      (
+                        {},
+                        'prop1',
+                        {
+                          |name, value|
+                          ('json', 'prop1,omitempty'),
+                          ('yaml', 'prop1,omitempty'),
+                        },
+                        (
+                          primitive: 'string',
+                        ),
+                      ),
+                    },
+                    required: {},
+                  ),
+                ),
+              ),
+            ),
+            (
+              {},
+              'requiredString',
+              {
+                |name, value|
+                ('json', 'requiredString,omitempty'),
+                ('yaml', 'requiredString,omitempty'),
+              },
+              (
+                primitive: 'string',
+              ),
+            ),
+          },
+          required: {'requiredEmptyObject', 'requiredObjectWithField', 'requiredString'},
+        ),
+      ),
+      (
+        {},
+        'string',
+        {
+          |name, value|
+          ('json', 'string,omitempty'),
+          ('yaml', 'string,omitempty'),
+        },
+        (
+          primitive: 'string',
+        ),
+      ),
+      (
+        'array example',
+        'arr',
+        {
+          |name, value|
+          ('json', 'arr,omitempty'),
+          ('yaml', 'arr,omitempty'),
+        },
+        (
+          items: (
+            description: {},
+            name: 'arr',
+            type: (
+              primitive: 'string',
+            ),
+          ),
+        ),
+      ),
+    },
+    required: {},
+  ),
+)

@@ -1,1 +1,1 @@
-\config \path //{./generate}(config, //encoding.json.decoder((strict: false), //os.file(path)))
+\config \path //{./generate}.go(config, //encoding.json.decoder((strict: false), //os.file(path)))
