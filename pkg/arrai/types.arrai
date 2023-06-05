@@ -215,7 +215,7 @@ let spreadType = \type
             # This is here to handle types at the root, but this is
             # unlikely to happen since these are usually embedded within complex types.
             (:primitive, ...): {type +> (:path)},
-            (:ref): {type +> (type: resolveRef(path, ref))},
+            (:ref): {type +> (type: resolveRef(path, ref), :path)},
 
             _: //error($`undefined type: ${type.type}`),
         } | 

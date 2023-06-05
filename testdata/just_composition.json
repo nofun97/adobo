@@ -57,6 +57,13 @@
         "referenced": {
             "$ref": "#/$defs/animal"
         },
+        "condref": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/animal"
+                }
+            ]
+        },
         "animals": {
             "patternProperties": {
                 ".*": {

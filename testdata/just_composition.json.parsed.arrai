@@ -155,6 +155,27 @@
       ),
       (
         {},
+        'condref',
+        {
+          |name, value|
+          ('json', 'condref,omitempty'),
+          ('yaml', 'condref,omitempty'),
+        },
+        (
+          conditional: {
+            |description, name, type|
+            (
+              {},
+              'condrefOpt0',
+              (
+                ref: '#/$defs/animal',
+              ),
+            ),
+          },
+        ),
+      ),
+      (
+        {},
         'data',
         {
           |name, value|
