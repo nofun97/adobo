@@ -375,6 +375,19 @@
         ),
         (
           {},
+          'Integer',
+          {
+            |name, value|
+            ('json', 'integer,omitempty'),
+            ('yaml', 'integer,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'int',
+          ),
+        ),
+        (
+          {},
           'Number',
           {
             |name, value|

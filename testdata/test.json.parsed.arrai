@@ -62,6 +62,18 @@
       ),
       (
         {},
+        'integer',
+        {
+          |name, value|
+          ('json', 'integer,omitempty'),
+          ('yaml', 'integer,omitempty'),
+        },
+        (
+          primitive: 'int',
+        ),
+      ),
+      (
+        {},
         'number',
         {
           |name, value|
