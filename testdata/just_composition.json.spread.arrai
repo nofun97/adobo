@@ -37,6 +37,14 @@
   ),
   (
     {},
+    'JustCompCondrefOpt0',
+    (
+      pointer: true,
+      typeRef: 'JustCompDefsAnimal',
+    ),
+  ),
+  (
+    {},
     'JustCompDataOpt0',
     (
       primitive: 'string',
@@ -274,6 +282,19 @@
             |name, value|
             ('json', 'blank,omitempty'),
             ('yaml', 'blank,omitempty'),
+          },
+          (
+            pointer: true,
+            primitive: 'interface{}',
+          ),
+        ),
+        (
+          {},
+          'Condref',
+          {
+            |name, value|
+            ('json', 'condref,omitempty'),
+            ('yaml', 'condref,omitempty'),
           },
           (
             pointer: true,

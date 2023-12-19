@@ -7,6 +7,7 @@ type JustComp struct {
     Age *interface{} `json:"age,omitempty" yaml:"age,omitempty"`
     Animals *map[string]interface{} `json:"animals,omitempty" yaml:"animals,omitempty"`
     Blank *interface{} `json:"blank,omitempty" yaml:"blank,omitempty"`
+    Condref *interface{} `json:"condref,omitempty" yaml:"condref,omitempty"`
     Data *interface{} `json:"data,omitempty" yaml:"data,omitempty"`
     Name *interface{} `json:"name,omitempty" yaml:"name,omitempty"`
     Referenced *JustCompDefsAnimal `json:"referenced,omitempty" yaml:"referenced,omitempty"`
@@ -21,6 +22,8 @@ type JustCompAnimalsValue interface{}
 type JustCompAnimalsValueAnimalsOpt0 string
 
 type JustCompAnimalsValueAnimalsOpt1 string
+
+type JustCompCondrefOpt0 *JustCompDefsAnimal
 
 type JustCompDataOpt0 string
 
