@@ -9,22 +9,23 @@ let goPrimitiveType = {
     'string':  'string',
     'number':  'float',
     'boolean': 'bool',
+    'integer': 'int',
 };
 
 let safeName = //{./util}.safeName;
 
 # Turn a schema into a nested tuple of types and metadata
 let rec parse = \name \schema
-    
+
     let conditional = \conditions
     (
-        conditional: conditions => 
+        conditional: conditions =>
             parse($`${name}Opt${.@}`, .@item)
     );
 
     let type = cond schema {
 
-        {'properties': properties, ...}: 
+        {'properties': properties, ...}:
             (
                 fields: properties => (
                     parse(.@, .@value) +> (
@@ -58,13 +59,13 @@ let rec parse = \name \schema
                 ),
             }
         ,
-        {'allOf': cons, ...}: 
+        {'allOf': cons, ...}:
             conditional(cons)
         ,
-        {'anyOf': cons, ...}: 
+        {'anyOf': cons, ...}:
             conditional(cons)
         ,
-        {'oneOf': cons, ...}: 
+        {'oneOf': cons, ...}:
             conditional(cons)
         ,
         {'$ref': ref, ...}:      (ref: ref),
@@ -75,9 +76,9 @@ let rec parse = \name \schema
         {'not': _, ...}:         (primitive: 'interface{}'),
         {}:                      (primitive: 'interface{}'),
         _:                       (undefined: schema),
-    } +> 
+    } +>
     cond schema {
-        {'$defs': defs, ...}: 
+        {'$defs': defs, ...}:
             (
                 defs: defs => (
                     parse(.@, .@value)
@@ -119,7 +120,7 @@ let spreadType = \type
     ;
     let varName = \path safeName(//seq.join('', path >> //str.title(.)));
     let typeRef = \path (typeRef: varName(path), pointer: true);
-    
+
     # Resolve a pointer reference in the form: A#B
     # A: Relative path from current schema to target schema (note: if empty then current schema is referenced).
     # B: Path from schema root (note: if empty then the schema itself is being referenced).
@@ -140,7 +141,7 @@ let spreadType = \type
     let rec spread = \path \type
         cond type.type {
 
-            (:fields, :required, ...): 
+            (:fields, :required, ...):
                 fields &&
                 let spreadField = \addPath \field spread(path ++ [field.name] ++ addPath, field.|name, type, description|);
                 let newTypes = //rel.union(
@@ -153,7 +154,7 @@ let spreadType = \type
                         (:key, :value, ...): !isSimple(value.type) && spreadField(['value'], value),
                         (:items, ...): !isSimple(items.type) && spreadField(['item'], items),
                         (:conditional, ...): //rel.union(
-                            conditional where !(.).type.undefined?:false => 
+                            conditional where !(.).type.undefined?:false =>
                                 spreadField({}, .)),
                     }
                 )
@@ -218,10 +219,10 @@ let spreadType = \type
             (:ref): {type +> (type: resolveRef(path, ref))},
 
             _: //error($`undefined type: ${type.type}`),
-        } | 
+        } |
         cond type.type {
             (:defs, ...):
-                //rel.union(defs => 
+                //rel.union(defs =>
                     spread(path ++ ['defs', .name], .))
         }
     ;

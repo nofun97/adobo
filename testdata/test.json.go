@@ -7,6 +7,7 @@ type Test struct {
     Arr *[]string `json:"arr,omitempty" yaml:"arr,omitempty"`
     Boolean *bool `json:"boolean,omitempty" yaml:"boolean,omitempty"`
     ComplexArray *[]*TestComplexArrayItem `json:"complexArray,omitempty" yaml:"complexArray,omitempty"`
+    Integer *int `json:"integer,omitempty" yaml:"integer,omitempty"`
     Number *float `json:"number,omitempty" yaml:"number,omitempty"`
     Obj *TestObj `json:"obj,omitempty" yaml:"obj,omitempty"`
     String *string `json:"string,omitempty" yaml:"string,omitempty"`

@@ -17,6 +17,9 @@
     "number": {
       "type": "number"
     },
+    "integer": {
+      "type": "integer"
+    },
     "boolean": {
       "type": "boolean"
     },
